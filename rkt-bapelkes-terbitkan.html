@@ -238,7 +238,7 @@ th.th-align-center { text-align: center; vertical-align: middle; }
 
 <!-- MODAL CETAK RAB -->
 <div class="modal fade" id="modalCetakRAB" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header bg-success text-white">
         <h5 class="modal-title fw-bold"><i class="fa-solid fa-file-invoice-dollar me-2"></i>Cetak RAB (PDF)</h5>
@@ -251,50 +251,9 @@ th.th-align-center { text-align: center; vertical-align: middle; }
             <!-- Dynamic options -->
           </select>
         </div>
-        
-        <hr class="my-3">
-        <h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-pen-nib me-2"></i>Pengaturan Penandatangan & Tanggal Cetak</h6>
-        
-        <div class="row g-3">
-          <!-- Column PPK -->
-          <div class="col-md-6">
-            <div class="p-3 border rounded bg-light">
-              <span class="badge bg-primary mb-2">Pejabat Pembuat Komitmen (PPK)</span>
-              <div class="mb-2">
-                <label class="form-label small fw-semibold mb-1">Nama PPK:</label>
-                <input type="text" id="inputNamaPPK" class="form-control form-control-sm" value="NAMA PEJABAT, S.E., M.Si." placeholder="Nama PPK beserta Gelar" oninput="simpanOtomatis(this.id, this.value)">
-              </div>
-              <div>
-                <label class="form-label small fw-semibold mb-1">NIP PPK:</label>
-                <input type="text" id="inputNipPPK" class="form-control form-control-sm" value="19850101 201001 1 001" placeholder="NIP PPK" oninput="simpanOtomatis(this.id, this.value)">
-              </div>
-            </div>
-          </div>
-          
-          <!-- Column PPTK -->
-          <div class="col-md-6">
-            <div class="p-3 border rounded bg-light">
-              <span class="badge bg-success mb-2">PPTK Kegiatan</span>
-              <div class="mb-2">
-                <label class="form-label small fw-semibold mb-1">Nama PPTK:</label>
-                <input type="text" id="inputNamaPPTK" class="form-control form-control-sm" value="Romadin, S.Adm" placeholder="Nama PPTK beserta Gelar" oninput="simpanOtomatis(this.id, this.value)">
-              </div>
-              <div>
-                <label class="form-label small fw-semibold mb-1">NIP PPTK:</label>
-                <input type="text" id="inputNipPPTK" class="form-control form-control-sm" value="19850510 202521 1 017" placeholder="NIP PPTK" oninput="simpanOtomatis(this.id, this.value)">
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-3">
-          <label class="form-label small fw-bold">Tanggal Cetak Dokumen:</label>
-          <input type="date" id="inputTanggalCetakRAB" class="form-control form-control-sm w-auto">
-        </div>
-
-        <div class="alert alert-info small py-2 mt-3 mb-0">
+        <div class="alert alert-info small py-2 mb-0">
           <i class="fa-solid fa-circle-info me-1"></i>
-          Dokumen RAB akan dicetak otomatis menyelaraskan data input pada Dashboard RKT secara dinamis dengan format 7 Kolom (Kode Rekening, Uraian, Volume, Koefisien, Satuan, Harga Satuan, dan Jumlah Total).
+          Dokumen RAB akan dicetak sesuai spesifikasi standar Satker Dinkes Prov. Kaltim / Bapelkes dengan format tabel 6 kolom, indentasi sub-item, dan nomor desimal Rupiah.
         </div>
       </div>
       <div class="modal-footer">
@@ -304,7 +263,6 @@ th.th-align-center { text-align: center; vertical-align: middle; }
     </div>
   </div>
 </div>
-
 <div class="modal fade" id="modalEvaluasi" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -480,7 +438,6 @@ th.th-align-center { text-align: center; vertical-align: middle; }
               <table class="table table-sm table-bordered bg-white align-middle mb-1">
                 <thead class="table-secondary small text-center">
                   <tr>
-                    <th>Kode Rekening Sub</th>
                     <th>Uraian Sub-Item Belanja</th>
                     <th style="width: 170px;">Koefisien (Kalkulasi)</th>
                     <th style="width: 90px;">Volume</th>
@@ -577,45 +534,53 @@ function bukaModalCetakRAB() {
       });
     });
   });
-
-  // Set default tanggal cetak ke hari ini jika belum terisi
-  var tglInput = document.getElementById('inputTanggalCetakRAB');
-  if (!tglInput.value) {
-    var today = new Date().toISOString().split('T')[0];
-    tglInput.value = today;
-  }
   
   modalCetakRABObj.show();
 }
 
 function formatRupiahIndo(angka) {
-  if (isNaN(angka) || angka === null) return "0";
-  var parts = Number(angka).toFixed(0).split('.');
+  if (isNaN(angka) || angka === null) return "Rp 0,00";
+  var parts = Number(angka).toFixed(2).split('.');
   var integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  return integerPart;
+  return "Rp " + integerPart + "," + parts[1];
 }
 
-// GENERATE DOKUMEN RAB DINAMIS BERDASARKAN INPUT DASHBOARD & TEMPLATE DOKUMEN
 function generateRABPDF() {
   var selectedSubId = document.getElementById('selectRabSubKegiatan').value;
   var jsPDFCtor = window.jspdf.jsPDF;
-  // Ubah ke orientasi LANDSCAPE
-  var doc = new jsPDFCtor({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+  var doc = new jsPDFCtor({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-  var pageWidth = doc.internal.pageSize.getWidth();   // 297mm
-  var pageHeight = doc.internal.pageSize.getHeight(); // 210mm
-  var margin = 14;
-  var currentY = 14;
+  var pageWidth = doc.internal.pageSize.getWidth();
+  var pageHeight = doc.internal.pageSize.getHeight();
+  var margin = 12;
+  var currentY = 12;
 
   // Header Metadata Satker
-  doc.setFontSize(11);
+  doc.setFontSize(9);
   doc.setFont(undefined, 'bold');
   doc.setTextColor(15, 23, 42);
-  doc.text("RENCANA ANGGARAN BIAYA (RAB)", pageWidth / 2, currentY, { align: "center" });
-  currentY += 6;
-  doc.setFontSize(10);
+  doc.text("RINCIAN ANGGARAN BIAYA (RAB)", pageWidth / 2, currentY, { align: "center" });
+  currentY += 5;
   doc.text("TAHUN ANGGARAN 2026", pageWidth / 2, currentY, { align: "center" });
-  currentY += 10;
+  currentY += 8;
+
+  // Metadata Block
+  doc.setFontSize(7.5);
+  doc.setFont(undefined, 'bold');
+  
+  var metadata = [
+    ["Urusan", ": 1.02 - URUSAN PEMERINTAHAN BIDANG KESEHATAN"],
+    ["Organisasi", ": 1.02.01 - DINAS KESEHATAN PROVINSI KALIMANTAN TIMUR"],
+    ["Sub Unit Organisasi", ": 1.02.01.02 - UPTD BALAI PELATIHAN KESEHATAN (BAPELKES)"]
+  ];
+
+  metadata.forEach(function(row) {
+    doc.text(row[0], margin, currentY);
+    doc.setFont(undefined, 'normal');
+    doc.text(row[1], margin + 32, currentY);
+    doc.setFont(undefined, 'bold');
+    currentY += 4.2;
+  });
 
   // Filter Target SubKegiatan or All
   var targetSubList = [];
@@ -634,191 +599,165 @@ function generateRABPDF() {
     return;
   }
 
+  // Iterate SubKegiatan and construct printable tables
   targetSubList.forEach(function(item, index) {
-    if (index > 0) {
+    if (index > 0 && currentY > pageHeight - 50) {
       doc.addPage();
-      currentY = 14;
+      currentY = 12;
+    } else if (index > 0) {
+      currentY += 6;
     }
 
-    // Header Metadata Program/Kegiatan/SubKegiatan dengan Spasi & Alignment yang Proporsional
-    doc.setFontSize(9);
-    doc.setFont(undefined, 'normal');
-    doc.setTextColor(30, 41, 59);
-    
-    var labelWidth = 28;
-    var colonX = margin + labelWidth;
-    var valX = colonX + 4;
-
-    // Baris Program
+    doc.setFontSize(7.5);
     doc.setFont(undefined, 'bold');
     doc.text("Program", margin, currentY);
-    doc.text(":", colonX, currentY);
     doc.setFont(undefined, 'normal');
-    doc.text(item.prog.kode + " - " + item.prog.nama, valX, currentY);
-    currentY += 6;
+    doc.text(": " + item.prog.kode + " " + item.prog.nama, margin + 32, currentY);
+    currentY += 4.2;
 
-    // Baris Kegiatan
     doc.setFont(undefined, 'bold');
     doc.text("Kegiatan", margin, currentY);
-    doc.text(":", colonX, currentY);
     doc.setFont(undefined, 'normal');
-    doc.text(item.keg.kode + " - " + item.keg.nama, valX, currentY);
-    currentY += 6;
+    doc.text(": " + item.keg.kode + " " + item.keg.nama, margin + 32, currentY);
+    currentY += 4.2;
 
-    // Baris Sub Kegiatan
     doc.setFont(undefined, 'bold');
     doc.text("Sub Kegiatan", margin, currentY);
-    doc.text(":", colonX, currentY);
     doc.setFont(undefined, 'normal');
-    doc.text(item.sub.kode + " - " + item.sub.nama, valX, currentY);
-    currentY += 8;
+    doc.text(": " + item.sub.kode + " " + item.sub.nama, margin + 32, currentY);
+    currentY += 6;
 
-    // Build Table Rows Dinamis dari input Dashboard
+    // Build Table Rows
     var tableRows = [];
     var grandTotalSub = 0;
 
     item.sub.komponen.forEach(function(komp) {
+      // Level 1: Kelompok Belanja / Komponen Utama
+      tableRows.push({
+        isLevel1: true,
+        data: ["5.1", komp.uraian.toUpperCase(), "", "", "", formatRupiahIndo(komp.pagu)]
+      });
+
+      // Level 2: Kode Rekening Detail
+      tableRows.push({
+        isLevel2: true,
+        data: ["5.1.02.01.01", "Rincian Perhitungan Belanja: " + komp.uraian, "", "", "", ""]
+      });
+
+      // Level 3: Sub-Item Rincian
       if (komp.rincian && komp.rincian.length > 0) {
         komp.rincian.forEach(function(r) {
           var totalSubItem = r.vol * r.harga;
-          grandTotalSub += totalSubItem;
-
+          var labelKoef = r.koefisien ? " [" + r.koefisien + "]" : "";
           tableRows.push({
-            kode: r.kodeSub || "5.1.02.01.01",
-            uraian: r.nama,
-            vol: r.vol.toString(),
-            koef: r.koefisien || "-",
-            satuan: r.satuan || "-",
-            harga: formatRupiahIndo(r.harga),
-            total: formatRupiahIndo(totalSubItem)
+            isLevel3: true,
+            data: [
+              "",
+              "- " + r.nama + labelKoef + " (" + r.vol + " " + r.satuan + ")",
+              r.vol.toString(),
+              r.satuan,
+              formatRupiahIndo(r.harga),
+              formatRupiahIndo(totalSubItem)
+            ]
           });
         });
-      } else {
-        grandTotalSub += komp.pagu;
-        tableRows.push({
-          kode: "5.1.02.01.01",
-          uraian: komp.uraian,
-          vol: "1",
-          koef: "-",
-          satuan: "Paket",
-          harga: formatRupiahIndo(komp.pagu),
-          total: formatRupiahIndo(komp.pagu)
-        });
       }
+      grandTotalSub += komp.pagu;
     });
 
-    // Format Body Tabel PDF
-    var formattedBody = [];
-    tableRows.forEach(function(row) {
-      formattedBody.push([
-        row.kode,
-        row.uraian,
-        row.vol,
-        row.koef,
-        row.satuan,
-        row.harga,
-        row.total
-      ]);
+    // Total Row
+    tableRows.push({
+      isTotal: true,
+      data: ["", "JUMLAH TOTAL RAB SUB KEGIATAN", "", "", "", formatRupiahIndo(grandTotalSub)]
     });
 
-    // Baris Jumlah Total Anggaran
-    formattedBody.push([
-      { content: "JUMLAH TOTAL ANGGARAN", colSpan: 6, styles: { halign: 'right', fontStyle: 'bold', fontSize: 8.5 } },
-      { content: formatRupiahIndo(grandTotalSub), styles: { halign: 'right', fontStyle: 'bold', fontSize: 8.5 } }
-    ]);
-
-    // Total Lebar Tabel = 297mm - 2*14mm = 269mm
-    // Alokasi Lebar Kolom Proporsional:
-    // 0: Kode Rekening (35mm)
-    // 1: Uraian Sub-Item Belanja (94mm)
-    // 2: Volume (20mm)
-    // 3: Koefisien (40mm)
-    // 4: Satuan (22mm)
-    // 5: Harga Satuan (29mm)
-    // 6: Jumlah Total (29mm) -> Total = 269mm
     doc.autoTable({
       startY: currentY,
-      head: [["KODE REKENING", "URAIAN SUB-ITEM BELANJA", "VOLUME", "KOEFISIEN", "SATUAN", "HARGA SATUAN (Rp)", "JUMLAH TOTAL (Rp)"]],
-      body: formattedBody,
+      head: [["Kode Rekening", "Uraian", "Volume", "Satuan", "Harga Satuan (Rp)", "Jumlah Total (Rp)"]],
+      body: tableRows.map(function(r) { return r.data; }),
       theme: 'grid',
       styles: {
-        fontSize: 8,
-        cellPadding: 3,
+        fontSize: 6.5,
+        cellPadding: 1.8,
         valign: 'middle',
         overflow: 'linebreak',
-        font: 'helvetica',
-        textColor: [15, 23, 42]
+        font: 'helvetica'
       },
       headStyles: {
-        fillColor: [241, 245, 249],
-        textColor: [15, 23, 42],
-        fontSize: 8.5,
+        fillColor: [30, 41, 59],
+        textColor: 255,
+        fontSize: 6.8,
         halign: 'center',
-        fontStyle: 'bold',
-        lineWidth: 0.25,
-        lineColor: [100, 116, 139]
+        fontStyle: 'bold'
       },
       columnStyles: {
-        0: { cellWidth: 35, halign: 'center' },
-        1: { cellWidth: 94, halign: 'left' },
-        2: { cellWidth: 20, halign: 'center' },
-        3: { cellWidth: 40, halign: 'center' },
-        4: { cellWidth: 22, halign: 'center' },
-        5: { cellWidth: 29, halign: 'right' },
-        6: { cellWidth: 29, halign: 'right' }
+        0: { cellWidth: 26, halign: 'left' },
+        1: { cellWidth: 70, halign: 'left' },
+        2: { cellWidth: 16, halign: 'center' },
+        3: { cellWidth: 18, halign: 'center' },
+        4: { cellWidth: 28, halign: 'right' },
+        5: { cellWidth: 28, halign: 'right' }
       },
-      margin: { left: margin, right: margin, bottom: 14 },
-      pageBreak: 'auto'
+      margin: { left: margin, right: margin, bottom: 12 },
+      pageBreak: 'auto',
+      rowPageBreak: 'avoid',
+      didParseCell: function(data) {
+        var rowObj = tableRows[data.row.index];
+        if (!rowObj) return;
+
+        if (rowObj.isLevel1) {
+          data.cell.styles.fillColor = [226, 232, 240];
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.textColor = [15, 23, 42];
+        } else if (rowObj.isLevel2) {
+          data.cell.styles.fillColor = [241, 245, 249];
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.textColor = [30, 41, 59];
+        } else if (rowObj.isLevel3) {
+          if (data.column.index === 1) {
+            data.cell.styles.cellPadding = { left: 5, top: 1.5, bottom: 1.5, right: 1.8 };
+          }
+          data.cell.styles.textColor = [51, 65, 85];
+        } else if (rowObj.isTotal) {
+          data.cell.styles.fillColor = [30, 41, 59];
+          data.cell.styles.textColor = [255, 255, 255];
+          data.cell.styles.fontStyle = 'bold';
+        }
+      },
+      didDrawPage: function(data) {
+        doc.setFontSize(6.5);
+        doc.setFont(undefined, 'normal');
+        doc.setTextColor(148, 163, 184);
+        doc.text("Halaman " + data.pageNumber, pageWidth - margin - 10, pageHeight - 6);
+      }
     });
 
-    currentY = doc.lastAutoTable.finalY + 12;
-
-    // Ambil nilai dari input modal pilihan PPK, PPTK, dan Tanggal Cetak
-    var namaPPK = document.getElementById('inputNamaPPK').value.trim() || "NAMA PEJABAT, S.E., M.Si.";
-    var nipPPK = document.getElementById('inputNipPPK').value.trim() || "19850101 201001 1 001";
-    var namaPPTK = document.getElementById('inputNamaPPTK').value.trim() || "Romadin, S.Adm";
-    var nipPPTK = document.getElementById('inputNipPPTK').value.trim() || "19850510 202521 1 017";
-    var rawTgl = document.getElementById('inputTanggalCetakRAB').value;
-    
-    var formattedTgl = "10 September 2026";
-    if (rawTgl) {
-      var d = new Date(rawTgl);
-      if (!isNaN(d.getTime())) {
-        formattedTgl = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-      }
-    }
-
-    // Tanda Tangan PPK & PPTK jika muat di halaman yang sama
-    if (currentY + 45 > pageHeight) {
-      doc.addPage();
-      currentY = 16;
-    }
-
-    doc.setFontSize(8.5);
-    doc.setFont(undefined, 'normal');
-    doc.setTextColor(15, 23, 42);
-    
-    // TTD Kiri (PPK)
-    var ttdLeftX = margin + 15;
-    doc.text("Mengetahui,", ttdLeftX, currentY);
-    doc.text("Pejabat Pembuat Komitmen", ttdLeftX, currentY + 5);
-    doc.setFont(undefined, 'bold');
-    doc.text(namaPPK, ttdLeftX, currentY + 28);
-    doc.setFont(undefined, 'normal');
-    doc.text("NIP. " + nipPPK, ttdLeftX, currentY + 33);
-
-    // TTD Kanan (PPTK)
-    var ttdRightX = pageWidth - margin - 75;
-    doc.text("Samarinda, " + formattedTgl, ttdRightX, currentY);
-    doc.text("PPTK Kegiatan", ttdRightX, currentY + 5);
-    doc.setFont(undefined, 'bold');
-    doc.text(namaPPTK, ttdRightX, currentY + 28);
-    doc.setFont(undefined, 'normal');
-    doc.text("NIP. " + nipPPTK, ttdRightX, currentY + 33);
+    currentY = doc.lastAutoTable.finalY + 8;
   });
 
+  // Tanda Tangan Section
+  if (currentY + 35 > pageHeight) {
+    doc.addPage();
+    currentY = 15;
+  }
+
+  var ttdX = pageWidth - margin - 75;
+  doc.setFontSize(8);
+  doc.setFont(undefined, 'normal');
+  doc.setTextColor(15, 23, 42);
+  doc.text("Samarinda, 10 September 2026", ttdX + 15, currentY);
+  doc.text("Pengelola Data & Perencanaan Bapelkes", ttdX + 8, currentY + 4);
+
+  doc.setFont(undefined, 'bold');
+  doc.text("Romadin, S.Adm", ttdX + 22, currentY + 22);
+
+  doc.setFont(undefined, 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(100, 116, 139);
+  doc.text("NIP. 19850510 202521 1 017", ttdX + 15, currentY + 26);
+
   modalCetakRABObj.hide();
-  doc.save("Cetak-Rencana-Anggaran-Biaya-RAB.pdf");
+  doc.save("Dokumen-RAB-Bapelkes-Kaltim.pdf");
 }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -837,7 +776,7 @@ var dataEvaluasi = {
   ]
 };
 
-// DATA RKT TERMASUK RINCIAN SUB-ITEM DENGAN KOEFISIEN DARI DASHBOARD
+// DATA RKT TERMASUK RINCIAN SUB-ITEM DENGAN KOEFISIEN
 var daftarProgram = [
   {
     id: "prog-1",
@@ -863,8 +802,8 @@ var daftarProgram = [
                 pagu: 50000000,
                 targetFisik: "100%",
                 rincian: [
-                  { kodeSub: "5.1.02.02.01.0003", nama: "Honorarium Narasumber Pakar Kesehatan", koefisien: "5 Or x 2 Jp x 2 Keg", vol: 20, satuan: "OJ", harga: 1500000 },
-                  { kodeSub: "5.1.02.02.01.0003", nama: "Honorarium Moderator / Panitia", koefisien: "10 Or x 2 Keg", vol: 20, satuan: "OK", harga: 1000000 }
+                  { nama: "Honorarium Narasumber", koefisien: "5 Or x 2 Jp", vol: 10, satuan: "O-J", harga: 3000000 },
+                  { nama: "Honorarium Panitia", koefisien: "10 Or x 2 Keg", vol: 20, satuan: "O-K", harga: 1000000 }
                 ],
                 targetKas: [10000000, 10000000, 10000000, 10000000, 10000000, 0, 0, 0, 0, 0, 0, 0],
                 realisasiAktual: [10000000, 10000000, 10000000, 10000000, 10000000, 0, 0, 0, 0, 0, 0, 0]
@@ -875,8 +814,8 @@ var daftarProgram = [
                 pagu: 10000000,
                 targetFisik: "100%",
                 rincian: [
-                  { kodeSub: "5.1.02.01.01.0052", nama: "Makan Siang Peserta", koefisien: "20 Or x 5 Keg", vol: 100, satuan: "Porsi", harga: 70000 },
-                  { kodeSub: "5.1.02.01.01.0052", nama: "Snack Rapat Koordinasi", koefisien: "20 Or x 5 Keg", vol: 100, satuan: "Porsi", harga: 30000 }
+                  { nama: "Makan Siang peserta", koefisien: "20 Or x 5 Keg", vol: 100, satuan: "Porsi", harga: 70000 },
+                  { nama: "Snack Rapat", koefisien: "20 Or x 5 Keg", vol: 100, satuan: "Porsi", harga: 30000 }
                 ],
                 targetKas: [2000000, 2000000, 2000000, 2000000, 2000000, 0, 0, 0, 0, 0, 0, 0],
                 realisasiAktual: [2000000, 2000000, 2000000, 2000000, 2000000, 0, 0, 0, 0, 0, 0, 0]
@@ -895,7 +834,7 @@ var daftarProgram = [
                 pagu: 15000000,
                 targetFisik: "75%",
                 rincian: [
-                  { kodeSub: "5.1.02.01.01.0026", nama: "Cetak Buku Laporan RKT Hardcover", koefisien: "50 Buku", vol: 50, satuan: "Buku", harga: 300000 }
+                  { nama: "Cetak Buku Laporan RKT Hardcover", koefisien: "50 Buku", vol: 50, satuan: "Buku", harga: 300000 }
                 ],
                 targetKas: [0, 5000000, 5000000, 5000000, 0, 0, 0, 0, 0, 0, 0, 0],
                 realisasiAktual: [0, 5000000, 5000000, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -906,8 +845,8 @@ var daftarProgram = [
                 pagu: 5000000,
                 targetFisik: "100%",
                 rincian: [
-                  { kodeSub: "5.1.02.01.01.0024", nama: "Kertas HVS A4 80gr", koefisien: "50 Rim", vol: 50, satuan: "Rim", harga: 60000 },
-                  { kodeSub: "5.1.02.01.01.0024", nama: "Tinta Printer & Perlengkapan Jilid", koefisien: "1 Paket", vol: 1, satuan: "Paket", harga: 2000000 }
+                  { nama: "Kertas HVS A4 80gr", koefisien: "50 Rim", vol: 50, satuan: "Rim", harga: 60000 },
+                  { nama: "Tinta Printer & Perlengkapan Jilid", koefisien: "1 Paket", vol: 1, satuan: "Paket", harga: 2000000 }
                 ],
                 targetKas: [1000000, 1000000, 1000000, 1000000, 1000000, 0, 0, 0, 0, 0, 0, 0],
                 realisasiAktual: [1000000, 1000000, 1000000, 1000000, 1000000, 0, 0, 0, 0, 0, 0, 0]
@@ -1038,12 +977,12 @@ function renderInputs12Bulan() {
     htmlKas += `
       <div class="col-md-3">
         <label class="small text-muted mb-0">${bulanNames[i]}</label>
-        <input type="number" id="targetKas-${i}" class="form-control form-control-sm" value="0" oninput="hitungOtomatisModal(); simpanOtomatis(this.id, this.value)">
+        <input type="number" id="targetKas-${i}" class="form-control form-control-sm" value="0" oninput="hitungOtomatisModal()">
       </div>`;
     htmlReal += `
       <div class="col-md-3">
         <label class="small text-muted mb-0">${bulanNames[i]}</label>
-        <input type="number" id="realisasiAct-${i}" class="form-control form-control-sm" value="0" oninput="hitungOtomatisModal(); simpanOtomatis(this.id, this.value)">
+        <input type="number" id="realisasiAct-${i}" class="form-control form-control-sm" value="0" oninput="hitungOtomatisModal()">
       </div>`;
   }
   containerKas.innerHTML = htmlKas;
@@ -1361,6 +1300,7 @@ function updateCharts(pagu, targetKas, realisasi) {
 // KALKULATOR KOEFISIEN OTOMATIS
 function hitungKoefisienKeVolume(koefStr) {
   if (!koefStr || !koefStr.trim()) return 1;
+  // Ambil seluruh angka dari string (misal: "5 Or x 2 Jp x 5 Keg" -> [5, 2, 5])
   var numbers = koefStr.match(/\d+(?:[\.,]\d+)?/g);
   if (!numbers || numbers.length === 0) return 1;
   
@@ -1377,28 +1317,25 @@ function hitungKoefisienKeVolume(koefStr) {
 // RINCIAN KOMPONEN LOGIC & KOEFISIEN
 function tambahRowRincian(data) {
   var tbody = document.getElementById('tbodyRincianKomponen');
-  var item = data || { kodeSub: '5.1.02.01.01', nama: '', koefisien: '', vol: 1, satuan: 'Paket', harga: 0 };
+  var item = data || { nama: '', koefisien: '', vol: 1, satuan: 'Paket', harga: 0 };
   
   var tr = document.createElement('tr');
   tr.className = 'row-rincian-item';
   tr.innerHTML = `
     <td>
-      <input type="text" class="form-control form-control-sm rincian-kodesub" value="${item.kodeSub || '5.1.02.01.01'}" placeholder="Kode Sub" simpanOtomatis(this.id, this.value)" required>
+      <input type="text" class="form-control form-control-sm rincian-nama" value="${item.nama}" placeholder="Contoh: Belanja Kertas A4" required>
     </td>
     <td>
-      <input type="text" class="form-control form-control-sm rincian-nama" value="${item.nama}" placeholder="Contoh: Belanja Kertas A4" simpanOtomatis(this.id, this.value)" required>
+      <input type="text" class="form-control form-control-sm rincian-koefisien" value="${item.koefisien || ''}" placeholder="mis. 5 Or x 2 Jp x 5 Keg" oninput="prosesKoefisienRow(this)">
     </td>
     <td>
-      <input type="text" class="form-control form-control-sm rincian-koefisien" value="${item.koefisien || ''}" placeholder="mis. 5 Or x 2 Jp x 5 Keg" oninput="prosesKoefisienRow(this); simpanOtomatis(this.id, this.value)">
+      <input type="number" class="form-control form-control-sm text-center rincian-vol" value="${item.vol}" min="1" oninput="hitungPaguOtomatisRincian()" required>
     </td>
     <td>
-      <input type="number" class="form-control form-control-sm text-center rincian-vol" value="${item.vol}" min="1" oninput="hitungPaguOtomatisRincian()" simpanOtomatis(this.id, this.value)" required>
+      <input type="text" class="form-control form-control-sm text-center rincian-satuan" value="${item.satuan}" placeholder="Rim/Keg/Orang">
     </td>
     <td>
-      <input type="text" class="form-control form-control-sm text-center rincian-satuan" value="${item.satuan}" placeholder="Rim/Keg/Orang" simpanOtomatis(this.id, this.value)">
-    </td>
-    <td>
-      <input type="number" class="form-control form-control-sm text-end rincian-harga" value="${item.harga}" placeholder="0" oninput="hitungPaguOtomatisRincian()" simpanOtomatis(this.id, this.value)" required>
+      <input type="number" class="form-control form-control-sm text-end rincian-harga" value="${item.harga}" placeholder="0" oninput="hitungPaguOtomatisRincian()" required>
     </td>
     <td class="text-end fw-bold text-dark rincian-subtotal align-middle">
       ${formatRupiah(item.vol * item.harga)}
@@ -1776,7 +1713,7 @@ function bukaModalKomponen(kompId) {
               if (k.rincian && k.rincian.length > 0) {
                 k.rincian.forEach(r => tambahRowRincian(r));
               } else {
-                tambahRowRincian({ kodeSub: '5.1.02.01.01', nama: k.uraian, koefisien: '', vol: 1, satuan: 'Paket', harga: k.pagu });
+                tambahRowRincian({ nama: k.uraian, koefisien: '', vol: 1, satuan: 'Paket', harga: k.pagu });
               }
 
               for (var i = 0; i < 12; i++) {
@@ -1843,7 +1780,6 @@ function simpanKomponen() {
   var rincianArr = [];
   var rowsRincian = document.querySelectorAll('.row-rincian-item');
   rowsRincian.forEach(function(row) {
-    var rKodeSub = row.querySelector('.rincian-kodesub').value;
     var rNama = row.querySelector('.rincian-nama').value;
     var rKoef = row.querySelector('.rincian-koefisien').value;
     var rVol = parseFloat(row.querySelector('.rincian-vol').value) || 0;
@@ -1851,7 +1787,7 @@ function simpanKomponen() {
     var rHarga = parseFloat(row.querySelector('.rincian-harga').value) || 0;
 
     if (rNama.trim() !== '') {
-      rincianArr.push({ kodeSub: rKodeSub, nama: rNama, koefisien: rKoef, vol: rVol, satuan: rSatuan, harga: rHarga });
+      rincianArr.push({ nama: rNama, koefisien: rKoef, vol: rVol, satuan: rSatuan, harga: rHarga });
     }
   });
 
@@ -2127,29 +2063,6 @@ window.unduhLaporanPdf = function(){
     alert('Gagal membuat PDF: ' + err.message);
   }
 };
-</script>
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAxwCM5X7z8r7gS-S8t2O8IeEYC3nPjS3E",
-  authDomain: "rkt-bapelkes-85b0f.firebaseapp.com",
-  databaseURL: "https://rkt-bapelkes-85b0f-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "rkt-bapelkes-85b0f",
-  storageBucket: "rkt-bapelkes-85b0f.firebasestorage.app",
-  messagingSenderId: "1022288366355",
-  appId: "1:1022288366355:web:2224d7c0b0da6718d568e6",
-  measurementId: "G-ZQEJFQE1B6"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 </script>
 </body>
 </html>
