@@ -262,11 +262,11 @@ th.th-align-center { text-align: center; vertical-align: middle; }
               <span class="badge bg-primary mb-2">Pejabat Pembuat Komitmen (PPK)</span>
               <div class="mb-2">
                 <label class="form-label small fw-semibold mb-1">Nama PPK:</label>
-                <input type="text" id="inputNamaPPK" class="form-control form-control-sm" value="NAMA PEJABAT, S.E., M.Si." placeholder="Nama PPK beserta Gelar">
+                <input type="text" id="inputNamaPPK" class="form-control form-control-sm" value="NAMA PEJABAT, S.E., M.Si." placeholder="Nama PPK beserta Gelar" oninput="simpanOtomatis(this.id, this.value)">
               </div>
               <div>
                 <label class="form-label small fw-semibold mb-1">NIP PPK:</label>
-                <input type="text" id="inputNipPPK" class="form-control form-control-sm" value="19850101 201001 1 001" placeholder="NIP PPK">
+                <input type="text" id="inputNipPPK" class="form-control form-control-sm" value="19850101 201001 1 001" placeholder="NIP PPK" oninput="simpanOtomatis(this.id, this.value)">
               </div>
             </div>
           </div>
@@ -277,11 +277,11 @@ th.th-align-center { text-align: center; vertical-align: middle; }
               <span class="badge bg-success mb-2">PPTK Kegiatan</span>
               <div class="mb-2">
                 <label class="form-label small fw-semibold mb-1">Nama PPTK:</label>
-                <input type="text" id="inputNamaPPTK" class="form-control form-control-sm" value="Romadin, S.Adm" placeholder="Nama PPTK beserta Gelar">
+                <input type="text" id="inputNamaPPTK" class="form-control form-control-sm" value="Romadin, S.Adm" placeholder="Nama PPTK beserta Gelar" oninput="simpanOtomatis(this.id, this.value)">
               </div>
               <div>
                 <label class="form-label small fw-semibold mb-1">NIP PPTK:</label>
-                <input type="text" id="inputNipPPTK" class="form-control form-control-sm" value="19850510 202521 1 017" placeholder="NIP PPTK">
+                <input type="text" id="inputNipPPTK" class="form-control form-control-sm" value="19850510 202521 1 017" placeholder="NIP PPTK" oninput="simpanOtomatis(this.id, this.value)">
               </div>
             </div>
           </div>
@@ -1038,12 +1038,12 @@ function renderInputs12Bulan() {
     htmlKas += `
       <div class="col-md-3">
         <label class="small text-muted mb-0">${bulanNames[i]}</label>
-        <input type="number" id="targetKas-${i}" class="form-control form-control-sm" value="0" oninput="hitungOtomatisModal()">
+        <input type="number" id="targetKas-${i}" class="form-control form-control-sm" value="0" oninput="hitungOtomatisModal(); simpanOtomatis(this.id, this.value)">
       </div>`;
     htmlReal += `
       <div class="col-md-3">
         <label class="small text-muted mb-0">${bulanNames[i]}</label>
-        <input type="number" id="realisasiAct-${i}" class="form-control form-control-sm" value="0" oninput="hitungOtomatisModal()">
+        <input type="number" id="realisasiAct-${i}" class="form-control form-control-sm" value="0" oninput="hitungOtomatisModal(); simpanOtomatis(this.id, this.value)">
       </div>`;
   }
   containerKas.innerHTML = htmlKas;
@@ -1383,22 +1383,22 @@ function tambahRowRincian(data) {
   tr.className = 'row-rincian-item';
   tr.innerHTML = `
     <td>
-      <input type="text" class="form-control form-control-sm rincian-kodesub" value="${item.kodeSub || '5.1.02.01.01'}" placeholder="Kode Sub" required>
+      <input type="text" class="form-control form-control-sm rincian-kodesub" value="${item.kodeSub || '5.1.02.01.01'}" placeholder="Kode Sub" simpanOtomatis(this.id, this.value)" required>
     </td>
     <td>
-      <input type="text" class="form-control form-control-sm rincian-nama" value="${item.nama}" placeholder="Contoh: Belanja Kertas A4" required>
+      <input type="text" class="form-control form-control-sm rincian-nama" value="${item.nama}" placeholder="Contoh: Belanja Kertas A4" simpanOtomatis(this.id, this.value)" required>
     </td>
     <td>
-      <input type="text" class="form-control form-control-sm rincian-koefisien" value="${item.koefisien || ''}" placeholder="mis. 5 Or x 2 Jp x 5 Keg" oninput="prosesKoefisienRow(this)">
+      <input type="text" class="form-control form-control-sm rincian-koefisien" value="${item.koefisien || ''}" placeholder="mis. 5 Or x 2 Jp x 5 Keg" oninput="prosesKoefisienRow(this); simpanOtomatis(this.id, this.value)">
     </td>
     <td>
-      <input type="number" class="form-control form-control-sm text-center rincian-vol" value="${item.vol}" min="1" oninput="hitungPaguOtomatisRincian()" required>
+      <input type="number" class="form-control form-control-sm text-center rincian-vol" value="${item.vol}" min="1" oninput="hitungPaguOtomatisRincian()" simpanOtomatis(this.id, this.value)" required>
     </td>
     <td>
-      <input type="text" class="form-control form-control-sm text-center rincian-satuan" value="${item.satuan}" placeholder="Rim/Keg/Orang">
+      <input type="text" class="form-control form-control-sm text-center rincian-satuan" value="${item.satuan}" placeholder="Rim/Keg/Orang" simpanOtomatis(this.id, this.value)">
     </td>
     <td>
-      <input type="number" class="form-control form-control-sm text-end rincian-harga" value="${item.harga}" placeholder="0" oninput="hitungPaguOtomatisRincian()" required>
+      <input type="number" class="form-control form-control-sm text-end rincian-harga" value="${item.harga}" placeholder="0" oninput="hitungPaguOtomatisRincian()" simpanOtomatis(this.id, this.value)" required>
     </td>
     <td class="text-end fw-bold text-dark rincian-subtotal align-middle">
       ${formatRupiah(item.vol * item.harga)}
@@ -2128,5 +2128,32 @@ window.unduhLaporanPdf = function(){
   }
 };
 </script>
+  
+  // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAxwCM5X7z8r7gS-S8t2O8IeEYC3nPjS3E",
+  authDomain: "rkt-bapelkes-85b0f.firebaseapp.com",
+  databaseURL: "https://rkt-bapelkes-85b0f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "rkt-bapelkes-85b0f",
+  storageBucket: "rkt-bapelkes-85b0f.firebasestorage.app",
+  messagingSenderId: "1022288366355",
+  appId: "1:1022288366355:web:2224d7c0b0da6718d568e6",
+  measurementId: "G-ZQEJFQE1B6"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+    }
+};
+</script>
+  
 </body>
 </html>
