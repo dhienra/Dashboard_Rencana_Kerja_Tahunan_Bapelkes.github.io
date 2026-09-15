@@ -2127,29 +2127,29 @@ window.unduhLaporanPdf = function(){
     alert('Gagal membuat PDF: ' + err.message);
   }
 };
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+</script>
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyAxwCM5X7z8r7gS-S8t2O8IeEYC3nPjS3E",
-    authDomain: "rkt-bapelkes-85b0f.firebaseapp.com",
-    databaseURL: "https://rkt-bapelkes-85b0f-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "rkt-bapelkes-85b0f",
-    storageBucket: "rkt-bapelkes-85b0f.firebasestorage.app",
-    messagingSenderId: "1022288366355",
-    appId: "1:1022288366355:web:2224d7c0b0da6718d568e6",
-    measurementId: "G-ZQEJFQE1B6"
-  };
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAxwCM5X7z8r7gS-S8t2O8IeEYC3nPjS3E",
+  authDomain: "rkt-bapelkes-85b0f.firebaseapp.com",
+  databaseURL: "https://rkt-bapelkes-85b0f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "rkt-bapelkes-85b0f",
+  storageBucket: "rkt-bapelkes-85b0f.firebasestorage.app",
+  messagingSenderId: "1022288366355",
+  appId: "1:1022288366355:web:2224d7c0b0da6718d568e6",
+  measurementId: "G-ZQEJFQE1B6"
+};
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 </script>
 </body>
 </html>
